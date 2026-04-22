@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/estilos.css">
+    <title>Exemplo 03  | Compliance Academy</title>
+</head>
+<body>
+    <img src="img/002.jpg" alt="Descubra o Número" class="normal">
+    <h1>Jogo Descubra o Número</h1>
+    <form>
+        <p> Numero:
+            <input typer="number" min="1" max="100" id="inNumero" required autofocus>
+            <input type="submit" value="Apostar" id="btSubmit">
+            <input type="button" value="Jogar Novamente" id="btNovo" class="oculta">
+        </p>
+    </form>
+    <h3>Erros: <span id="outErros"></span></h3>
+    <h3>Chances: <span id="outChances">6</span></h3>
+    <h3 id="outDica" class="italico">Dica: É um numero entre 1 e 100</h3>
+    <pre></pre>
+    <script src="../js/exemplo_03.js"></script>
+</body>
+</html>

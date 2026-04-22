@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Levenshtein: Força Bruta vs DP (Tabulação)</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 16px; max-width: 1000px; }
+    label { display:block; margin-top: 10px; }
+    input[type="text"] { width: 100%; padding: 8px; box-sizing: border-box; }
+    button { margin: 10px 8px 0 0; padding: 8px 12px; }
+    .row { display:flex; gap: 16px; flex-wrap: wrap; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-top: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f6f6f6; }
+    pre { background: #111; color: #eee; padding: 10px; border-radius: 10px; overflow:auto; }
+    .muted { color:#555; font-size: 0.95em; }
+  </style>
+</head>
+<body>
+  <h2>Distância de Levenshtein (Força Bruta vs DP)</h2>
+  <p class="muted">
+    Força bruta é recursiva e explode rápido. Use strings pequenas (≈10–12) ou rode o benchmark com limite.
+  </p>
+
+  <div class="card">
+    <div class="row">
+      <div style="flex:1; min-width: 260px;">
+        <label>String A</label>
+        <input id="strA" type="text" value="" />
+      </div>
+      <div style="flex:1; min-width: 260px;">
+        <label>String B</label>
+        <input id="strB" type="text" value=" " />
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 8px;">
+      <div style="min-width: 260px;">
+        <label>Limite (força bruta): chamadas</label>
+        <input id="limitCalls" type="text" value="1000000" />
+      </div>
+      <div style="min-width: 260px;">
+        <label>Limite (força bruta): tempo (ms)</label>
+        <input id="limitMs" type="text" value="700" />
+      </div>
+    </div>
+
+    <div style="margin-top: 10px;">
+      <button id="btnBF">Calcular (Força Bruta)</button>
+      <button id="btnDP">Calcular (DP Tabulação)</button>
+      <button id="btnBench">Rodar Benchmark</button>
+      <button id="btnClear">Limpar Resultados</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Resultado (execução unitária)</h3>
+    <div id="singleOut" class="muted">—</div>
+  </div>
+
+  <div class="card">
+    <h3>Benchmark</h3>
+    <div class="muted">
+      Sugestão: força bruta roda até tamanho 10–12 (com timeout). DP roda tamanhos maiores sem problema.
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Tamanho</th>
+          <th>Algoritmo</th>
+          <th>Distância</th>
+          <th>Tempo (ms)</th>
+          <th>Chamadas (BF)</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="benchBody"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Log</h3>
+    <pre id="log"></pre>
+  </div>
+
+<script>
+/* =========================
+   Utils (tempo, log, yield)
+   ========================= */
+
+/** performance.now() dá tempo em ms com alta resolução no navegador */
+function nowMs() {
+  return performance.now();
+}
+
+/** Log simples na tela */
+function appendLog(msg) {
+  const el = document.getElementById('log');
+  el.textContent += msg + "\n";
+  el.scrollTop = el.scrollHeight;
+}
+
+/**
+ * Solta a thread para o navegador renderizar/receber eventos.
+ * Isso evita a aba “congelar” durante benchmarks.
+ */
+function yieldToBrowser() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
+/* ==================================
+   Algorithms: Levenshtein Brute Force
+    */
+
+
+function levenshteinBruteForce(a, b, limits) {
+  const start = nowMs();
+  let calls = 0;
+
+  function rec(i, j) {
+    calls++;
+
+    // Freios de segurança (evitar travar o navegador)
+    if (calls > limits.maxCalls) throw new Error("call_limit");
+    if ((nowMs() - start) > limits.maxMs) throw new Error("timeout");
+
+    // Pra eu parar essa bomba
+    if (i === 0) return j;
+    if (j === 0) return i;
+
+    // Eu diminuo essa bomba se o final for igual
+    if (a[i - 1] === b[j - 1]) {
+      return rec(i - 1, j - 1);
+    }
+
+    // Se diferente: tenta delete, insert, replace (custo 1 + subproblema)
+    const del = rec(i - 1, j);     // deletar char de a
+    const ins = rec(i, j - 1);     // inserir char em a (equivale a deletar de b)
+    const rep = rec(i - 1, j - 1); // substituir
+
+    return 1 + Math.min(del, ins, rep);
+  }
+
+  try {
+    const dist = rec(a.length, b.length);
+    return { dist, calls, status: "ok" };
+  } catch (e) {
+    const status = (e && e.message) ? e.message : "error";
+    return { dist: null, calls, status };
+  }
+}
+
+/* ==================================
+   Algorithms: Levenshtein DP (Tabulação)
+   ================================== */
+
+
+function levenshteinDP(a, b) {
+  const m = a.length;
+  const n = b.length;
+
+
+  if (n > m) return levenshteinDP(b, a);  // gastar menos memoria
+
+ 
+  const prev = new Uint32Array(n + 1);  //linha d eicma da matriz
+  const curr = new Uint32Array(n + 1);  // linha atual
+
+  // Base: D[0][j] = j
+  for (let j = 0; j <= n; j++) prev[j] = j;
+
+  for (let i = 1; i <= m; i++) {
+    // Base: D[i][0] = i
+    curr[0] = i;                             //tem que preencher a primeira linha por vez que corre
+
+  
+    for (let j = 1; j <= n; j++) {
+      const cost = (a[i - 1] === b[j - 1]) ? 0 : 1;
+
+      // delete: prev[j] + 1
+      // insert: curr[j-1] + 1
+      // replace/copy: prev[j-1] + cost
+      const del = prev[j] + 1;
+      const ins = curr[j - 1] + 1;
+      const rep = prev[j - 1] + cost;
+
+      curr[j] = Math.min(del, ins, rep);
+    }
+
+    // swap prev <- curr (sem copiar arrays)
+    prev.set(curr);
+  }
+
+  return { dist: prev[n] };
+}
+
+/* ==========================
+   Benchmark + Render helpers
+   ========================== */
+
+function clearResults() {
+  document.getElementById('benchBody').innerHTML = "";
+  document.getElementById('singleOut').textContent = "—";
+  document.getElementById('log').textContent = "";
+}
+
+function addBenchRow({ size, algo, dist, timeMs, calls, status }) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${size}</td>
+    <td>${algo}</td>
+    <td>${dist ?? "—"}</td>
+    <td>${timeMs.toFixed(3)}</td>
+    <td>${calls ?? "—"}</td>
+    <td>${status}</td>
+  `;
+  document.getElementById('benchBody').appendChild(tr);
+}
+
+/**
+ * Gera strings para benchmark.
+ * Para simplificar: usa padrão repetitivo + variação final para criar casos “parecidos” e “diferentes”.
+ * Se quiser, dá para trocar por strings aleatórias.
+ */
+function makePair(size, mode) {
+  // mode: "similar" ou "different"
+  const base = "abcdefghijklmnopqrstuvwxyz";
+  let a = "";
+  let b = "";
+
+  for (let i = 0; i < size; i++) {
+    const ch = base[i % base.length];
+    a += ch;
+    if (mode === "similar") {
+      // geralmente igual, mas altera a cada 5 posições
+      b += (i % 5 === 0) ? base[(i + 3) % base.length] : ch;
+    } else {
+      // diferente: desloca tudo
+      b += base[(i + 7) % base.length];
+    }
+  }
+  return { a, b };
+}
+
+/**
+ * Roda o benchmark em lotes, liberando a UI entre casos.
+ */
+async function runBenchmark() {
+  clearResults();
+  appendLog("Iniciando benchmark...");
+
+  const maxCalls = parseInt(document.getElementById('limitCalls').value, 10) || 1000000;
+  const maxMs = parseFloat(document.getElementById('limitMs').value) || 700;
+
+  // Configure os tamanhos:
+  const sizesBF = [2,3,4,5,6,7,8,9,10,11,12]; // brute force (pequeno)
+  const sizesDP = [10,20,50,100,200,500,1000]; // DP (maior)
+
+  // Execute 2 “famílias” de testes para deixar o relatório mais sólido:
+  const modes = ["similar", "different"];
+
+  // 1) Brute Force
+  for (const mode of modes) {
+    appendLog(`\n[BF] Modo: ${mode}`);
+    for (const size of sizesBF) {
+      const { a, b } = makePair(size, mode);
+      const t0 = nowMs();
+      const out = levenshteinBruteForce(a, b, { maxCalls, maxMs });
+      const t1 = nowMs();
+
+      addBenchRow({
+        size,
+        algo: `BF (${mode})`,
+        dist: out.dist,
+        timeMs: (t1 - t0),
+        calls: out.calls,
+        status: out.status
+      });
+
+      // solta a UI a cada execução
+      await yieldToBrowser();
+    }
+  }
+
+  // 2) DP
+  for (const mode of modes) {
+    appendLog(`\n[DP] Modo: ${mode}`);
+    for (const size of sizesDP) {
+      const { a, b } = makePair(size, mode);
+      const t0 = nowMs();
+      const out = levenshteinDP(a, b);
+      const t1 = nowMs();
+
+      addBenchRow({
+        size,
+        algo: `DP (${mode})`,
+        dist: out.dist,
+        timeMs: (t1 - t0),
+        calls: null,
+        status: "ok"
+      });
+
+      await yieldToBrowser();
+    }
+  }
+
+  appendLog("\nBenchmark concluído.");
+}
+
+/* ===================
+   UI event handlers
+   =================== */
+
+function readInputs() {
+  const a = document.getElementById('strA').value ?? "";
+  const b = document.getElementById('strB').value ?? "";
+  const maxCalls = parseInt(document.getElementById('limitCalls').value, 10) || 1000000;
+  const maxMs = parseFloat(document.getElementById('limitMs').value) || 700;
+  return { a, b, limits: { maxCalls, maxMs } };
+}
+
+document.getElementById('btnClear').addEventListener('click', clearResults);
+
+document.getElementById('btnBF').addEventListener('click', () => {
+  const { a, b, limits } = readInputs();
+  const t0 = nowMs();
+  const out = levenshteinBruteForce(a, b, limits);
+  const t1 = nowMs();
+
+  document.getElementById('singleOut').textContent =
+    `BF -> dist: ${out.dist ?? "—"}, tempo: ${(t1 - t0).toFixed(3)} ms, calls: ${out.calls}, status: ${out.status}`;
+});
+
+document.getElementById('btnDP').addEventListener('click', () => {
+  const { a, b } = readInputs();
+  const t0 = nowMs();
+  const out = levenshteinDP(a, b);
+  const t1 = nowMs();
+
+  document.getElementById('singleOut').textContent =
+    `DP -> dist: ${out.dist}, tempo: ${(t1 - t0).toFixed(3)} ms`;
+});
+
+document.getElementById('btnBench').addEventListener('click', async () => {
+  // Evita cliques repetidos durante benchmark
+  document.getElementById('btnBench').disabled = true;
+  try {
+    await runBenchmark();
+  } finally {
+    document.getElementById('btnBench').disabled = false;
+  }
+});
+
+// Inicializa log
+appendLog("Pronto. Digite as strings e escolha o algoritmo.");
+</script>
+</body>
+</html>

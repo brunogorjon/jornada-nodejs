@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/estilos.css">
+    <title>Exemplo 03 | Compliance Academy</title>
+</head>
+<body>
+   <script>
+    const palavra = prompt("Palavra: ")
+    const tam = palavra.length
+
+    let inverso = palavra.charAt(tam - 1).toUpperCase()
+
+    for (let i = tam -2 ; i >= 0; i--){
+        inverso += palavra.charAt(i).toLowerCase()
+    }
+
+    alert(`Palavra: ${palavra}\n Invertida ${inverso}`)
+   </script>
+</body>
+</html>

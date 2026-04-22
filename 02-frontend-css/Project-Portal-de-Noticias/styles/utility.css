@@ -1,0 +1,68 @@
+.grid {
+    display: grid;
+}
+
+.grid-flow-col {
+    grid-auto-flow: column;
+}
+
+.grid-cols-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.gap-16 {
+    gap: 16px;
+}
+.gap-32 {
+    gap: 32px;
+}
+
+.text-2xl {
+    font:var(--h1);
+}
+
+.text-xl {
+    font:var(--h2);
+}
+
+.text-lg {
+    font:var(--h3);
+}
+
+.text-sm {
+    font:var(--text-sm);
+}
+
+.grid {
+    display: grid;
+}
+
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-8 {
+    gap: 8px; /* ou 0.5rem */
+}
+
+.ia-article-grid {
+    display: grid;
+    /* A primeira coluna (texto) ocupa o espaço que sobrar (1fr) 
+       A segunda coluna (imagem) ocupa exatamente o tamanho da imagem ou um fixo */
+    grid-template-columns: 1fr 150px; 
+    align-items: start;
+    gap: 16px;
+
+    img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px; /* Opcional: para ficar bonitinho */
+}
+}
+

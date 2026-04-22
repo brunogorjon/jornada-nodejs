@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/estilos.css">
+    <title>Exemplo 01 | Compliance Academy</title>
+</head>
+<body>
+    <script>
+        const anuncio = prompt("Anuncio: ")  //le o anuncio
+        let numPalavras = 0                 //inicializa o contador
+        const tam = anuncio.length          //obtem o tamanho 
+        for(let i = 0 ; i < tam ; i++){     // percorre os caracteres do anuncio
+            if (anuncio.charAt(i) == " "){     // se encontrou um espaço
+                numPalavras++               // incrementa o contaodr
+            }
+        }
+        alert(`Anuncio: ${anuncio}\n No Palavras: ${(numPalavras + 1)}`)
+    </script>
+</body>
+</html>

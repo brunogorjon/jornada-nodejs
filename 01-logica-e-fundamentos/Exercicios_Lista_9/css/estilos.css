@@ -1,0 +1,17 @@
+img { float: left; height: 300px; width: 300px; }
+img.exerc { float: left; height: 250px; width: 200px; }
+h1 { border-bottom-style: inset; }
+.entre-letras { letter-spacing: 0.5em; }
+.alinha-direita { text-align: right; }
+.azul {
+    color: blue;
+}
+
+.vermelho {
+    color: red;
+}
+
+h3 {
+    font-family: monospace;
+    white-space: pre;
+}
