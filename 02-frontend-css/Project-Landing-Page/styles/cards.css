@@ -2,8 +2,27 @@
     background: var(--surface-color);
     border: 1px solid var(--stroke-color);
     border-radius: 1.5rem;
+    position: relative;
+    
 
     & h3 {
         margin-top: 1rem;
     }
+
+    &.premium {
+        border: 2px solid var(--brand-color-primary);
+    }
+}
+
+.badge {
+    position: absolute;
+    top: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--brand-color-primary);
+    color: var(--surface-color);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: bold;
+    font-size: 0.75rem;
 }
