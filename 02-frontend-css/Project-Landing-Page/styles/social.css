@@ -1,0 +1,79 @@
+a.social[aria-label="instagram"] {
+    background: var(--text-color-secondary);
+    -webkit-mask-image: url(../assets/icons/instagram.svg);
+    mask-image: url(../assets/icons/instagram.svg);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+a.social[aria-label="instagram"]:hover {
+    background: linear-gradient(90deg, var(--brand-color-secundary) 0%, var(--brand-color-primary) 100%);
+}
+
+a.social[aria-label="twitter"] {
+    background: var(--text-color-secondary);
+    -webkit-mask-image: url(../assets/icons/twitter.svg);
+    mask-image: url(../assets/icons/twitter.svg);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+a.social[aria-label="twitter"]:hover {
+    background: linear-gradient(90deg, var(--brand-color-secundary) 0%, var(--brand-color-primary) 100%);
+}
+
+a.social[aria-label="discord"] {
+    background: var(--text-color-secondary);
+    -webkit-mask-image: url(../assets/icons/discord.svg);
+    mask-image: url(../assets/icons/discord.svg);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+a.social[aria-label="discord"]:hover {
+    background: linear-gradient(90deg, var(--brand-color-secundary) 0%, var(--brand-color-primary) 100%);
+}
+a.social {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+}
+
+a.social[aria-label="tiktok"] {
+    background: var(--text-color-secondary);
+    -webkit-mask-image: url(../assets/icons/tiktok.svg);
+    mask-image: url(../assets/icons/tiktok.svg);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+a.social[aria-label="tiktok"]:hover {
+    background: linear-gradient(90deg, var(--brand-color-secundary) 0%, var(--brand-color-primary) 100%);
+    /* Mantém a mesma máscara */
+}
+
+
