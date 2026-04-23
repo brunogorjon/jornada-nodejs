@@ -31,6 +31,18 @@
     gap: 1rem;
 }
 
+.flex {
+    display: flex;
+}
+
+.gap-1 {
+    gap: 1rem;
+}
+
+.grid {
+    display: grid   ;
+}
+
 @media (width >= 80em) {
     .container {
         --max-width: 80rem;
@@ -46,3 +58,4 @@
         grid-auto-columns: 1fr;
     }
 }
+
