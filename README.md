@@ -17,7 +17,10 @@ Projetos focados em transformar designs do Figma em código real, explorando té
 * **[Página de Receita](./02-frontend-css/Project-Pagina-Receita)**: Fundamentos de HTML e CSS.
 * **[Landing Page](./02-frontend-css/Project-Landing-Page)**: Aplicação de Conceitos de Resposividade
 
-### 🏆 03. Bootcamp Node.js (DIO)
+### ⚡ 03. JavaScript Avançado & DOM
+Projetos que aplicam lógica de programação, manipulação do DOM e consumo de APIs no navegador.
+
+### 🏆 04. Bootcamp Node.js (DIO)
 Desafios e projetos desenvolvidos durante o Bootcamp da Digital Innovation One.
 * [Ver desafios](./03-bootcamp-dio)
 
